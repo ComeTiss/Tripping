@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    return 301 https://$host$request_uri;
+}
+
+server {
+
+    listen 443;
+    server_name 138.68.155.162;
+
+    ssl_certificate           /etc/nginx/cert.crt;
+    ssl_certificate_key       /etc/nginx/cert.key;
+    ssl on;
+
+    location / {
+      proxy_pass          http://localhost:8080;
+    }
+}
+
+server {
+
+    listen 8081;
+    server_name 138.68.155.162;
+
+    ssl_certificate           /etc/nginx/cert.crt;
+    ssl_certificate_key       /etc/nginx/cert.key;
+    ssl on;
+
+    location / {
+      proxy_pass          http://localhost:8082;
+    }
+}

@@ -1,0 +1,35 @@
+# This is a sample build configuration for Docker.
+# Check our guides at https://confluence.atlassian.com/x/O1toN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: atlassian/default-image:2
+
+pipelines:
+  default:
+    - step:
+        services:
+          - docker
+        script:
+          - export IMAGE_NAME=timvan33/webtech-server
+          - docker build -t $IMAGE_NAME ./server/
+          - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+          - docker push $IMAGE_NAME
+    
+    - step:
+        services:
+          -  docker
+        size: 2x
+        script:
+          - export IMAGE_NAME=timvan33/webtech-client
+          - docker build -t $IMAGE_NAME ./client/
+          - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+          - docker push $IMAGE_NAME
+    
+    - step:
+        name: Deploy to production
+        # deployment: test   # can be test, staging or production.
+        trigger: manual  # Uncomment to make this a manual deployment.
+        script:
+          - cat ./deploy.sh | ssh user@138.68.155.162
+          - echo "Deploying to production.."

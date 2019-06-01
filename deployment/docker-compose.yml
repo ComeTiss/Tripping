@@ -1,0 +1,29 @@
+version: "3.5"
+services:
+
+  database:
+    image: mysql
+    container_name: webtech_database
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=pass
+      - MYSQL_DATABASE=webtech
+
+  server:
+    image: docker.io/timvan33/webtech-server
+    container_name: webtech_server
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - 8081:8081
+
+  client:
+    image: docker.io/timvan33/webtech-client
+    container_name: webtech_client
+    restart: always
+    depends_on:
+      - server
+    ports:
+      - 80:8080
